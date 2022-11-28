@@ -2203,6 +2203,8 @@ public class KeyguardViewMediator extends SystemUI implements Dumpable,
         Trace.beginSection("KeyguardViewMediator#handleStartKeyguardExitAnimation");
         if (DEBUG) Log.d(TAG, "handleStartKeyguardExitAnimation startTime=" + startTime
                 + " fadeoutDuration=" + fadeoutDuration);
+        Log.e("BAT", "handleStartKeyguardExitAnimation startTime=" + startTime
+                + " fadeoutDuration=" + fadeoutDuration);
         synchronized (KeyguardViewMediator.this) {
 
             // Tell ActivityManager that we canceled the keyguard animation if

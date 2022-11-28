@@ -138,6 +138,7 @@ public class WindowChangeAnimationSpec implements AnimationSpec {
     @Override
     public void apply(Transaction t, SurfaceControl leash, long currentPlayTime) {
         final TmpValues tmp = mThreadLocalTmps.get();
+        t.setBatIndex(leash, tmp.mTransformation.getBatIndex());
         if (mIsThumbnail) {
             mAnimation.getTransformation(currentPlayTime, tmp.mTransformation);
             t.setMatrix(leash, tmp.mTransformation.getMatrix(), tmp.mFloats);

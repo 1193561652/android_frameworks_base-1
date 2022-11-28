@@ -58,6 +58,7 @@
 #include <utils/LightRefBase.h>
 #include <utils/Log.h>
 
+#define BAT
 // ----------------------------------------------------------------------------
 
 namespace android {
@@ -704,7 +705,16 @@ static void nativeSetAlpha(JNIEnv* env, jclass clazz, jlong transactionObj,
     SurfaceControl* const ctrl = reinterpret_cast<SurfaceControl *>(nativeObject);
     transaction->setAlpha(ctrl, alpha);
 }
+#ifdef BAT
+static void nativeSetBatIndex(JNIEnv* env, jclass clazz, jlong transactionObj,
+        jlong nativeObject, jfloat index) {
+    auto transaction = reinterpret_cast<SurfaceComposerClient::Transaction*>(transactionObj);
 
+    SurfaceControl* const ctrl = reinterpret_cast<SurfaceControl *>(nativeObject);
+    transaction->setBatIndex(ctrl, index);
+    return;
+}
+#endif
 static void nativeSetInputWindowInfo(JNIEnv* env, jclass clazz, jlong transactionObj,
         jlong nativeObject, jobject inputWindow) {
     auto transaction = reinterpret_cast<SurfaceComposerClient::Transaction*>(transactionObj);
@@ -1878,6 +1888,10 @@ static const JNINativeMethod sSurfaceControlMethods[] = {
             (void*)nativeSetTransparentRegionHint },
     {"nativeSetAlpha", "(JJF)V",
             (void*)nativeSetAlpha },
+#ifdef BAT
+    {"nativeSetBatIndex", "(JJF)V",
+            (void*)nativeSetBatIndex },
+#endif
     {"nativeSetColor", "(JJ[F)V",
             (void*)nativeSetColor },
     {"nativeSetMatrix", "(JJFFFF)V",

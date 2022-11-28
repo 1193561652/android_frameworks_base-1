@@ -89,6 +89,7 @@ public class WindowAnimationSpec implements AnimationSpec {
         final TmpValues tmp = mThreadLocalTmps.get();
         tmp.transformation.clear();
         mAnimation.getTransformation(currentPlayTime, tmp.transformation);
+        t.setBatIndex(leash, tmp.transformation.getBatIndex());
         tmp.transformation.getMatrix().postTranslate(mPosition.x, mPosition.y);
         t.setMatrix(leash, tmp.transformation.getMatrix(), tmp.floats);
         t.setAlpha(leash, tmp.transformation.getAlpha());

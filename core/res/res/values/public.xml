@@ -909,6 +909,7 @@
   <public type="drawable" name="ic_dialog_info" id="0x0108009b" />
   <public type="drawable" name="ic_menu_sort_alphabetically" id="0x0108009c" />
   <public type="drawable" name="ic_menu_sort_by_size" id="0x0108009d" />
+  <public type="drawable" name="batman_icon" id="0x0108009e" />
 
   <public type="layout" name="activity_list_item" id="0x01090000" />
   <public type="layout" name="expandable_list_content" id="0x01090001" />
@@ -3021,6 +3022,8 @@
     <public type="id" name="accessibilitySystemActionLockScreen" id="0x01020052" />
     <public type="id" name="accessibilitySystemActionTakeScreenshot" id="0x01020053" />
     <public type="id" name="accessibilityActionImeEnter" id="0x01020054" />
+    
+    <public type="id" name="toast_bg" id="0x01020058" />
 
     <!-- @hide @TestApi -->
     <public type="bool" name="config_assistantOnTopOfDream" id="0x01110005" />

@@ -75,6 +75,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import android.util.Slog;
 
 /**
  * Handle to an on-screen Surface managed by the system compositor. The SurfaceControl is
@@ -122,6 +123,7 @@ public final class SurfaceControl implements Parcelable {
     private static native void nativeSetTransparentRegionHint(long transactionObj,
             long nativeObject, Region region);
     private static native void nativeSetAlpha(long transactionObj, long nativeObject, float alpha);
+    private static native void nativeSetBatIndex(long transactionObj, long nativeObject, float index);
     private static native void nativeSetMatrix(long transactionObj, long nativeObject,
             float dsdx, float dtdx,
             float dtdy, float dsdy);
@@ -2678,13 +2680,17 @@ public final class SurfaceControl implements Parcelable {
          * @hide
          */
         public long mNativeObject;
-
+        private float mBatIndex;
         private final ArrayMap<SurfaceControl, Point> mResizedSurfaces = new ArrayMap<>();
         private final ArrayMap<SurfaceControl, SurfaceControl> mReparentedSurfaces =
                  new ArrayMap<>();
 
         Runnable mFreeNativeResources;
         private static final float[] INVALID_COLOR = {-1, -1, -1};
+
+        public float getBatIndex() {
+            return mBatIndex;
+        }
 
         /**
          * @hide
@@ -2954,6 +2960,18 @@ public final class SurfaceControl implements Parcelable {
             nativeSetAlpha(mNativeObject, sc.mNativeObject, alpha);
             return this;
         }
+        
+        // BAT begin
+        @NonNull
+        public Transaction setBatIndex(@NonNull SurfaceControl sc,
+                @FloatRange(from = 0.0, to = 1.0) float index) {
+            checkPreconditions(sc);
+            nativeSetBatIndex(mNativeObject, sc.mNativeObject, index);
+            mBatIndex = index;
+            Slog.w("BAT", "Transaction index:" + index);
+            return this;
+        }
+        // BAT end
 
         /**
          * @hide

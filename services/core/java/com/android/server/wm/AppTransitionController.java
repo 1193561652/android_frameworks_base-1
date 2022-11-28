@@ -1030,6 +1030,8 @@ public class AppTransitionController {
     }
 
     private void handleNonAppWindowsInTransition(@TransitionOldType int transit, int flags) {
+        Slog.e("BAT", "handleNonAppWindowsInTransition transit=" + transit + " flags=" + flags +
+            " sEnableRemoteKeyguardGoingAwayAnimation=" + WindowManagerService.sEnableRemoteKeyguardGoingAwayAnimation);
         if (transit == TRANSIT_OLD_KEYGUARD_GOING_AWAY
                 && !WindowManagerService.sEnableRemoteKeyguardGoingAwayAnimation) {
             if ((flags & TRANSIT_FLAG_KEYGUARD_GOING_AWAY_WITH_WALLPAPER) != 0

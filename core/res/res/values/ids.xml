@@ -271,4 +271,6 @@
 
   <!-- View tag associating a view with its overridden id, to ensure valid recycling only. -->
   <item type="id" name="remote_views_override_id" />
+
+  <item type="id" name="toast_bg" />
 </resources>

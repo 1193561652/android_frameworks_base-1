@@ -40,3 +40,7 @@
     />
 
 </LinearLayout>
+
+<!--
+        android:textColor="?android:attr/tooltipForegroundColor"
+-->

@@ -46,6 +46,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.hardware.HardwareBuffer;
 import android.os.SystemProperties;
+import android.util.Log;
 import android.util.Slog;
 import android.view.WindowManager.LayoutParams;
 import android.view.WindowManager.TransitionOldType;
@@ -170,6 +171,7 @@ public class TransitionAnimation {
 
     /** Loads keyguard animation by transition flags and check it is on wallpaper or not. */
     public Animation loadKeyguardExitAnimation(int transitionFlags, boolean onWallpaper) {
+        Log.e("BAT", "loadKeyguardExitAnimation transitionFlags=" + transitionFlags + " onWallpaper=" + onWallpaper);
         if ((transitionFlags & TRANSIT_FLAG_KEYGUARD_GOING_AWAY_NO_ANIMATION) != 0) {
             return null;
         }
@@ -1192,6 +1194,7 @@ public class TransitionAnimation {
     public static Animation createHiddenByKeyguardExit(Context context,
             LogDecelerateInterpolator interpolator, boolean onWallpaper,
             boolean goingToNotificationShade, boolean subtleAnimation) {
+        Log.e("BAT", "createHiddenByKeyguardExit onWallpaper=" + onWallpaper + " goingToNotificationShade=" + goingToNotificationShade + " subtleAnimation=" + subtleAnimation);
         if (goingToNotificationShade) {
             return AnimationUtils.loadAnimation(context, R.anim.lock_screen_behind_enter_fade_in);
         }

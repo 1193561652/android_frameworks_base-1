@@ -191,6 +191,7 @@ class SurfaceAnimationRunner {
                         currentPlayTime = duration;
                     }
                     applyTransformation(a, mFrameTransaction, currentPlayTime);
+                    // Slog.w("BAT", "mFrameIndex:" + mFrameTransaction.getIndex() + " currentPlayTime:" + currentPlayTime);
                 }
             }
 

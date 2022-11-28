@@ -28,6 +28,7 @@ import android.content.res.XmlResourceParser;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Xml;
+import android.view.animation.BatAnimation;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -190,6 +191,8 @@ public class AnimationUtils {
                 anim = new TranslateAnimation(c, attrs);
             } else if (name.equals("cliprect")) {
                 anim = new ClipRectAnimation(c, attrs);
+            } else if (name.equals("bat")) {
+                anim = new BatAnimation(c, attrs);
             } else {
                 throw new RuntimeException("Unknown animation name: " + parser.getName());
             }

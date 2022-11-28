@@ -86,7 +86,7 @@ import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.TransactionPool;
 import com.android.wm.shell.protolog.ShellProtoLogGroup;
 import com.android.wm.shell.util.CounterRotator;
-
+import android.util.Slog;
 import java.util.ArrayList;
 
 /** The default handler that handles anything not already handled. */
@@ -396,7 +396,7 @@ public class DefaultTransitionHandler implements Transitions.TransitionHandler {
         final TransitionInfo.AnimationOptions options = info.getAnimationOptions();
         final int overrideType = options != null ? options.getType() : ANIM_NONE;
         final boolean canCustomContainer = isTask ? !sDisableCustomTaskAnimationProperty : true;
-
+        Slog.w("BAT", "loadAnimation flags=" + flags + " changeFlags=" + changeFlags);
         if (info.isKeyguardGoingAway()) {
             a = mTransitionAnimation.loadKeyguardExitAnimation(flags,
                     (changeFlags & FLAG_SHOW_WALLPAPER) != 0);

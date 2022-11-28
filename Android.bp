@@ -499,7 +499,8 @@ metalava_framework_docs_args = "--manifest $(location core/res/AndroidManifest.x
     "--api-lint-ignore-prefix android.icu. " +
     "--api-lint-ignore-prefix java. " +
     "--api-lint-ignore-prefix junit. " +
-    "--api-lint-ignore-prefix org. "
+    "--api-lint-ignore-prefix org. " +
+    "--api-lint-ignore-prefix android.view.animation. "
 
 packages_to_document = [
     "android",

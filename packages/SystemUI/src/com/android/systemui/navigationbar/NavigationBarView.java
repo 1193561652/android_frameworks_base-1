@@ -606,7 +606,9 @@ public class NavigationBarView extends FrameLayout implements
             mHomeDefaultIcon = getHomeDrawable();
         }
         if (densityChange || dirChange) {
-            mRecentIcon = getDrawable(R.drawable.ic_sysbar_recent);
+            // BAT
+            // mRecentIcon = getDrawable(R.drawable.ic_sysbar_recent);
+            mRecentIcon = getDrawable(R.drawable.bat_dock, R.drawable.bat_dock_light);
             getCursorLeftButton().updateIcon(mLightIconColor, mDarkIconColor);
             getCursorRightButton().updateIcon(mLightIconColor, mDarkIconColor);
             mContextualButtonGroup.updateIcons(mLightIconColor, mDarkIconColor);
@@ -634,21 +636,29 @@ public class NavigationBarView extends FrameLayout implements
     }
 
     public KeyButtonDrawable getBackDrawable() {
-        KeyButtonDrawable drawable = getDrawable(getBackDrawableRes());
+        // BAT
+        // KeyButtonDrawable drawable = getDrawable(getBackDrawableRes());
+        KeyButtonDrawable drawable = getDrawable(getBackDrawableRes(), R.drawable.bat_back_light);
         orientBackButton(drawable);
         return drawable;
     }
 
     public @DrawableRes int getBackDrawableRes() {
-        return chooseNavigationIconDrawableRes(R.drawable.ic_sysbar_back,
-                R.drawable.ic_sysbar_back_quick_step);
+        // BAT
+        // return chooseNavigationIconDrawableRes(R.drawable.ic_sysbar_back,
+        //         R.drawable.ic_sysbar_back_quick_step);
+        return chooseNavigationIconDrawableRes(R.drawable.bat_back, R.drawable.ic_sysbar_back_quick_step);
     }
 
     public KeyButtonDrawable getHomeDrawable() {
         final boolean quickStepEnabled = mOverviewProxyService.shouldShowSwipeUpUI();
+        // BAT
+        // KeyButtonDrawable drawable = quickStepEnabled
+        //         ? getDrawable(R.drawable.ic_sysbar_home_quick_step)
+        //         : getDrawable(R.drawable.ic_sysbar_home);
         KeyButtonDrawable drawable = quickStepEnabled
                 ? getDrawable(R.drawable.ic_sysbar_home_quick_step)
-                : getDrawable(R.drawable.ic_sysbar_home);
+                : getDrawable(R.drawable.bat_home, R.drawable.bat_home_light);
         orientHomeButton(drawable);
         return drawable;
     }
@@ -690,6 +700,10 @@ public class NavigationBarView extends FrameLayout implements
         return quickStepEnabled ? quickStepIcon : icon;
     }
 
+    private KeyButtonDrawable getDrawable(@DrawableRes int icon, @DrawableRes int iconlight) {
+        return KeyButtonDrawable.create(mLightContext, mLightIconColor, mDarkIconColor, icon, iconlight,
+                true /* hasShadow */, null /* ovalBackgroundColor */);
+    }
     private KeyButtonDrawable getDrawable(@DrawableRes int icon) {
         return KeyButtonDrawable.create(mLightContext, mLightIconColor, mDarkIconColor, icon,
                 true /* hasShadow */, null /* ovalBackgroundColor */);

@@ -101,8 +101,13 @@ public class KeyguardService extends Service {
     private static final String ENABLE_REMOTE_KEYGUARD_ANIMATION_PROPERTY =
             "persist.wm.enable_remote_keyguard_animation";
 
+    // BAT begin
+    // private static final int sEnableRemoteKeyguardAnimation =
+    //         SystemProperties.getInt(ENABLE_REMOTE_KEYGUARD_ANIMATION_PROPERTY, 1);
     private static final int sEnableRemoteKeyguardAnimation =
-            SystemProperties.getInt(ENABLE_REMOTE_KEYGUARD_ANIMATION_PROPERTY, 1);
+             SystemProperties.getInt(ENABLE_REMOTE_KEYGUARD_ANIMATION_PROPERTY, 0);
+    // BAT end
+
 
     /**
      * @see #ENABLE_REMOTE_KEYGUARD_ANIMATION_PROPERTY

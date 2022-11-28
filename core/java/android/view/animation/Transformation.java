@@ -53,6 +53,15 @@ public class Transformation {
     private boolean mHasClipRect;
     private Rect mClipRect = new Rect();
 
+    private float mBatIndex;
+
+    public void setBatIndex(float index) {
+        mBatIndex = index;
+    }
+    public float getBatIndex() {
+        return mBatIndex;
+    }
+
     /**
      * Creates a new transformation with alpha = 1 and the identity matrix.
      */
@@ -74,6 +83,7 @@ public class Transformation {
         mClipRect.setEmpty();
         mHasClipRect = false;
         mAlpha = 1.0f;
+        mBatIndex = 1.0f;
         mTransformationType = TYPE_BOTH;
     }
 
@@ -105,6 +115,7 @@ public class Transformation {
      */
     public void set(Transformation t) {
         mAlpha = t.getAlpha();
+        mBatIndex = t.getBatIndex();
         mMatrix.set(t.getMatrix());
         if (t.mHasClipRect) {
             setClipRect(t.getClipRect());
@@ -122,6 +133,7 @@ public class Transformation {
      */
     public void compose(Transformation t) {
         mAlpha *= t.getAlpha();
+        mBatIndex = Math.min(mBatIndex, t.getBatIndex());
         mMatrix.preConcat(t.getMatrix());
         if (t.mHasClipRect) {
             Rect bounds = t.getClipRect();
@@ -141,6 +153,7 @@ public class Transformation {
      */
     public void postCompose(Transformation t) {
         mAlpha *= t.getAlpha();
+        mBatIndex = Math.min(mBatIndex, t.getBatIndex());
         mMatrix.postConcat(t.getMatrix());
         if (t.mHasClipRect) {
             Rect bounds = t.getClipRect();

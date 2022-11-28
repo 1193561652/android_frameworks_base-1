@@ -492,11 +492,13 @@ public class Toast {
     public static Toast makeText(@NonNull Context context, @Nullable Looper looper,
             @NonNull CharSequence text, @Duration int duration) {
         if (Compatibility.isChangeEnabled(CHANGE_TEXT_TOASTS_IN_THE_SYSTEM)) {
+            // Log.e("BAT", "makeText 1");
             Toast result = new Toast(context, looper);
             result.mText = text;
             result.mDuration = duration;
             return result;
         } else {
+            // Log.e("BAT", "makeText 2");
             Toast result = new Toast(context, looper);
             View v = ToastPresenter.getTextToastView(context, text);
             result.mNextView = v;

@@ -38,7 +38,7 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.FloatProperty;
 import android.view.View;
-
+import android.util.Slog;
 import com.android.settingslib.Utils;
 import com.android.systemui.R;
 
@@ -77,6 +77,8 @@ public class KeyButtonDrawable extends Drawable {
 
     private final Paint mIconPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
     private final Paint mShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+    // BAT
+    private final Paint mBatLightPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
     private final ShadowDrawableState mState;
     private AnimatedVectorDrawable mAnimatedDrawable;
     private final Callback mAnimatedDrawableCallback = new Callback() {
@@ -102,8 +104,25 @@ public class KeyButtonDrawable extends Drawable {
                 d instanceof AnimatedVectorDrawable, horizontalFlip, ovalBackgroundColor));
     }
 
+    public KeyButtonDrawable(Drawable d, Drawable batd, @ColorInt int lightColor, @ColorInt int darkColor,
+            boolean horizontalFlip, Color ovalBackgroundColor) {
+        this(d, batd, new ShadowDrawableState(lightColor, darkColor,
+                d instanceof AnimatedVectorDrawable, horizontalFlip, ovalBackgroundColor));
+    }
+
     private KeyButtonDrawable(Drawable d, ShadowDrawableState state) {
+        this(d, null, state);
+    }
+
+    private KeyButtonDrawable(Drawable d, Drawable batd, ShadowDrawableState state) {
         mState = state;
+        if (batd != null) {
+            mState.mBatBaseHeight = batd.getIntrinsicHeight();
+            mState.mBatBaseWidth = batd.getIntrinsicWidth();
+            mState.mBatChangingConfigurations = batd.getChangingConfigurations();
+            mState.mBatChildState = batd.getConstantState();
+            mState.mEnableBatLigth = true;
+        }
         if (d != null) {
             mState.mBaseHeight = d.getIntrinsicHeight();
             mState.mBaseWidth = d.getIntrinsicWidth();
@@ -118,11 +137,17 @@ public class KeyButtonDrawable extends Drawable {
     }
 
     public void setDarkIntensity(float intensity) {
+        // BAT
+        // Slog.e("BAT", "setDarkIntensity " + this + " intensity=" + intensity);
         mState.mDarkIntensity = intensity;
-        final int color = (int) ArgbEvaluator.getInstance()
-                .evaluate(intensity, mState.mLightColor, mState.mDarkColor);
-        updateShadowAlpha();
-        setColorFilter(new PorterDuffColorFilter(color, Mode.SRC_ATOP));
+        if (!mState.mEnableBatLigth) {
+            final int color = (int) ArgbEvaluator.getInstance()
+                    .evaluate(intensity, mState.mLightColor, mState.mDarkColor);
+            updateShadowAlpha();
+            setColorFilter(new PorterDuffColorFilter(color, Mode.SRC_ATOP));
+        } else {
+
+        }
     }
 
     public void setRotation(float degrees) {
@@ -198,6 +223,7 @@ public class KeyButtonDrawable extends Drawable {
 
     @Override
     public void setColorFilter(ColorFilter colorFilter) {
+        // Slog.e("BAT", "setColorFilter");
         mIconPaint.setColorFilter(colorFilter);
         if (mAnimatedDrawable != null) {
             if (hasOvalBg()) {
@@ -252,6 +278,7 @@ public class KeyButtonDrawable extends Drawable {
 
     public void startAnimation() {
         if (mAnimatedDrawable != null) {
+            Slog.e("BAT", "startAnimation");
             mAnimatedDrawable.start();
         }
     }
@@ -304,6 +331,14 @@ public class KeyButtonDrawable extends Drawable {
                         - Math.sin(radians) * mState.mShadowOffsetX) - mState.mTranslationY;
                 canvas.drawBitmap(mState.mLastDrawnShadow, shadowOffsetX, shadowOffsetY,
                         mShadowPaint);
+            }
+            if (mState.mEnableBatLigth) {
+                if (mState.mLastDrawnBatLigth == null || hwBitmapChanged) {
+                    regenerateBitmapBatLightCache();
+                }
+
+                mBatLightPaint.setAlpha((int)(255 * (1.0f - mState.mDarkIntensity)));
+                canvas.drawBitmap(mState.mLastDrawnBatLigth, null, bounds, mBatLightPaint);
             }
             canvas.drawBitmap(mState.mLastDrawnIcon, null, bounds, mIconPaint);
             canvas.restore();
@@ -382,6 +417,29 @@ public class KeyButtonDrawable extends Drawable {
         mState.mLastDrawnShadow = bitmap;
     }
 
+    // BAT
+    private void regenerateBitmapBatLightCache() {
+        final int width = getIntrinsicWidth();
+        final int height = getIntrinsicHeight();
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bitmap);
+
+        // Call mutate, so that the pixel allocation by the underlying vector drawable is cleared.
+        final Drawable batd = mState.mBatChildState.newDrawable().mutate();
+        setDrawableBounds(batd);
+        canvas.save();
+        if (mState.mHorizontalFlip) {
+            canvas.scale(-1f, 1f, width * 0.5f, height * 0.5f);
+        }
+        batd.draw(canvas);
+        canvas.restore();
+
+        // if (mState.mIsHardwareBitmap) {
+        //     bitmap = bitmap.copy(Bitmap.Config.HARDWARE, false);
+        // }
+        mState.mLastDrawnBatLigth = bitmap;
+    }
+
     /**
      * Set the alpha of the shadow. As dark intensity increases, drop the alpha of the shadow since
      * dark color and shadow should not be visible at the same time.
@@ -422,7 +480,18 @@ public class KeyButtonDrawable extends Drawable {
         boolean mIsHardwareBitmap;
         Bitmap mLastDrawnIcon;
         Bitmap mLastDrawnShadow;
+        // BAT
+        Bitmap mLastDrawnBatLigth;
+
+        boolean mEnableBatLigth = false;
+
         ConstantState mChildState;
+
+        // BAT
+        int mBatChangingConfigurations;
+        int mBatBaseWidth;
+        int mBatBaseHeight;
+        ConstantState mBatChildState;
 
         final int mLightColor;
         final int mDarkColor;
@@ -464,20 +533,29 @@ public class KeyButtonDrawable extends Drawable {
         return create(lightContext,
             Utils.getColorAttrDefaultColor(lightContext, R.attr.singleToneColor),
             Utils.getColorAttrDefaultColor(darkContext, R.attr.singleToneColor),
-            iconResId, hasShadow, ovalBackgroundColor);
+            iconResId, 0, hasShadow, ovalBackgroundColor);
     }
 
+    public static KeyButtonDrawable create(Context context, @ColorInt int lightColor,
+            @ColorInt int darkColor, @DrawableRes int iconResId, boolean hasShadow,
+            Color ovalBackgroundColor) {
+        return create(context, lightColor, darkColor, iconResId, 0, hasShadow, ovalBackgroundColor);
+    }
     /**
      * Creates a KeyButtonDrawable with a shadow given its icon. For more information, see
      * {@link #create(Context, int, boolean, boolean)}.
      */
     public static KeyButtonDrawable create(Context context, @ColorInt int lightColor,
-            @ColorInt int darkColor, @DrawableRes int iconResId, boolean hasShadow,
+            @ColorInt int darkColor, @DrawableRes int iconResId, @DrawableRes int batResId, boolean hasShadow,
             Color ovalBackgroundColor) {
         final Resources res = context.getResources();
         boolean isRtl = res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         Drawable d = context.getDrawable(iconResId);
-        final KeyButtonDrawable drawable = new KeyButtonDrawable(d, lightColor, darkColor,
+        Drawable batd = null;
+        if (batResId > 0) {
+            batd = context.getDrawable(batResId);
+        }
+        final KeyButtonDrawable drawable = new KeyButtonDrawable(d, batd, lightColor, darkColor,
                 isRtl && d.isAutoMirrored(), ovalBackgroundColor);
         if (hasShadow) {
             int offsetX = res.getDimensionPixelSize(R.dimen.nav_key_button_shadow_offset_x);
